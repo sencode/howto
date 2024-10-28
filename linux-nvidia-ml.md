@@ -7,7 +7,7 @@ If you have both integrated (Intel, ASPEED, etc.) and discrete (NVIDIA) GPUs in 
 By default, even if you connect your monitor only to the integrated GPU, X.org will use both GPUs. You can check if X.org is using the NVIDIA GPU with this command:
 ```
 $ nvidia-smi
-Mon Oct 28 10:33:45 2024       
+Mon Oct 28 10:55:21 2024       
 +---------------------------------------------------------------------------------------+
 | NVIDIA-SMI 535.183.06             Driver Version: 535.183.06   CUDA Version: 12.2     |
 |-----------------------------------------+----------------------+----------------------+
@@ -16,7 +16,7 @@ Mon Oct 28 10:33:45 2024
 |                                         |                      |               MIG M. |
 |=========================================+======================+======================|
 |   0  NVIDIA GeForce GTX 1080        Off | 00000000:01:00.0 Off |                  N/A |
-| 24%   37C    P8               7W / 180W |    110MiB /  8192MiB |      0%      Default |
+| 24%   37C    P2              42W / 180W |    115MiB /  8192MiB |      0%      Default |
 |                                         |                      |                  N/A |
 +-----------------------------------------+----------------------+----------------------+
                                                                                          
@@ -25,10 +25,12 @@ Mon Oct 28 10:33:45 2024
 |  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
 |        ID   ID                                                             Usage      |
 |=======================================================================================|
-|    0   N/A  N/A     25601    C+G   ...libexec/gnome-remote-desktop-daemon      105MiB |
+|    0   N/A  N/A     29350      G   /usr/lib/xorg/Xorg                            4MiB |
+|    0   N/A  N/A     29421    C+G   ...libexec/gnome-remote-desktop-daemon      105MiB |
 +---------------------------------------------------------------------------------------+
-
 ```
+
+The last 2 lines show that both X.org and Gnome remote desktop daemon are using the NVIDIA GPU. The following shows you how to disable X.org from using your NVIDIA GPU.
 
 In Ubuntu 24.04 and recent versions, xorg.conf file doesn't exist by default. It is not needed in these distros. 
 However, custom settings can be stored in this file and X.org will use them.
@@ -72,4 +74,41 @@ Section "Screen"
 EndSection
 ```
 
-If you run nvidia-smi, it still says an X.org process is using the NVIDIA GPU. 
+If you run nvidia-smi, it still says an X.org process is using the NVIDIA GPU. That's because X.org references the NVIDIA driver in /usr/share/X11/xorg.conf.d/10-nvidia.conf 
+
+So, we will rename this file to have a different extension than .conf. Sometimes, X.org may recreate this file when you log out and log back in. So, we will create a black file and set its attribute to immutable, so no one other than root can edit it.
+
+```
+$ sudo mv /usr/share/X11/xorg.conf.d/10-nvidia.conf /usr/share/X11/xorg.conf.d/10-nvidia.conf.original
+$ sudo touch /usr/share/X11/xorg.conf.d/10-nvidia.conf
+$ sudo chattr +i /usr/share/X11/xorg.conf.d/10-nvidia.conf
+```
+
+Now, log out of X Windows and log back in, and run nvidia-smi again.
+
+```
+$ nvidia-smi
+Mon Oct 28 11:00:45 2024       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.183.06             Driver Version: 535.183.06   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce GTX 1080        Off | 00000000:01:00.0 Off |                  N/A |
+| 24%   37C    P8               7W / 180W |    110MiB /  8192MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|    0   N/A  N/A     25601    C+G   ...libexec/gnome-remote-desktop-daemon      105MiB |
++---------------------------------------------------------------------------------------+
+
+```
+
+X.org is no longer using the discrete GPU. Howver, the Gnome remote desktop daemon is still using it. How can we disable this?
