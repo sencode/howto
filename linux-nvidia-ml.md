@@ -111,4 +111,29 @@ Mon Oct 28 11:00:45 2024
 
 ```
 
-X.org is no longer using the discrete GPU. Howver, the Gnome remote desktop daemon is still using it. How can we disable this?
+X.org is no longer using the discrete GPU. Howver, the Gnome remote desktop daemon is still using it, consuming 105MiB of GPU RAM. How can we disable this? 
+
+When I check which GPU is primary, I see that it's the Intel iGPU. 
+
+```
+$ switcherooctl list
+Device: 0
+  Name:        Intel® HD Graphics P4600/P4700
+  Default:     yes
+  Environment: DRI_PRIME=pci-0000_00_02_0
+
+Device: 1
+  Name:        NVIDIA Corporation GP104 [GeForce GTX 1080]
+  Default:     no
+  Environment: __GLX_VENDOR_LIBRARY_NAME=nvidia __NV_PRIME_RENDER_OFFLOAD=1 __VK_LAYER_NV_optimus=NVIDIA_only
+```
+
+The easy option is to remove the Gnome remote desktop daemon with the following:
+```
+$ systemctl --user disable --now gnome-remote-desktop.service
+```
+
+But in case we need this, can we stop it from using the NVIDIA GPU?
+
+
+
