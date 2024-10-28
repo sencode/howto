@@ -131,9 +131,32 @@ Device: 1
 The easy option is to remove the Gnome remote desktop daemon with the following:
 ```
 $ systemctl --user disable --now gnome-remote-desktop.service
+$
+$ nvidia-smi
+Mon Oct 28 11:11:53 2024       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.183.06             Driver Version: 535.183.06   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce GTX 1080        Off | 00000000:01:00.0 Off |                  N/A |
+| 24%   34C    P8              13W / 180W |      0MiB /  8192MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
+
 ```
 
-But in case we need this, can we stop it from using the NVIDIA GPU?
+But in case we need Gnome remote desktop daemon, can we stop it from using the NVIDIA GPU?
 
 
 
