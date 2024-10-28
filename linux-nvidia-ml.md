@@ -1,6 +1,7 @@
 How-to use the integrated GPU for display and the NVIDIA discrete GPU for machine learning under Ubuntu
 
 Based on https://askubuntu.com/questions/1061551/how-to-configure-igpu-for-xserver-and-nvidia-gpu-for-cuda-work/1099963#1099963
+and https://bbs.archlinux.org/viewtopic.php?id=284892#4
 
 If you have both integrated (Intel, ASPEED, etc.) and discrete (NVIDIA) GPUs in your ML lab machine, you might want to use the integrated GPU for display and the NVIDIA GPU purely for ML to conserve all the NVIDIA GPU memory for your ML workloads.
 
@@ -157,6 +158,19 @@ Mon Oct 28 11:11:53 2024
 ```
 
 But in case we need Gnome remote desktop daemon, can we stop it from using the NVIDIA GPU?
+
+Some online discussion threads mention that the [Bumblebee](https://wiki.ubuntu.com/Bumblebee) library might be using it. But Bumblebee is not installed on my computer. 
+
+So, let's diable Gnome remote desktop daemon from using the NVIDIA GPU with the following directive. Create the file below along with its containing directory if needed.
+
+```
+$ sudo cat /etc/systemd/user/gnome-remote-desktop.service.d/no-CUDA-override.conf
+[Service]
+ExecStart=
+ExecStart=env CUDA_VISIBLE_DEVICES="" /usr/lib/gnome-remote-desktop-daemon
+```
+
+
 
 
 
