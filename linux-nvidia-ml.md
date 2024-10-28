@@ -170,7 +170,47 @@ ExecStart=
 ExecStart=env CUDA_VISIBLE_DEVICES="" /usr/lib/gnome-remote-desktop-daemon
 ```
 
+Now, restart the Gnome remote desktop daemon and check the result.
 
+```
+$ sudo systemctl restart gnome-remote-desktop.service
+$
+$ sudo systemctl status gnome-remote-desktop.service
+● gnome-remote-desktop.service - GNOME Remote Desktop
+     Loaded: loaded (/usr/lib/systemd/system/gnome-remote-desktop.service; enabled; preset: enabled)
+     Active: active (running) since Mon 2024-10-28 11:36:17 MDT; 4s ago
+   Main PID: 8547 (gnome-remote-de)
+      Tasks: 5 (limit: 38030)
+     Memory: 2.8M (peak: 3.4M)
+        CPU: 16ms
+     CGroup: /system.slice/gnome-remote-desktop.service
+             └─8547 /usr/libexec/gnome-remote-desktop-daemon --system
 
+Oct 28 11:36:17 sodhanai systemd[1]: Starting gnome-remote-desktop.service - GNOME Remote Desktop...
+Oct 28 11:36:17 sodhanai gnome-remote-de[8547]: Init TPM credentials failed because No TPM device found, using GKeyFile as fallback
+Oct 28 11:36:17 sodhanai systemd[1]: Started gnome-remote-desktop.service - GNOME Remote Desktop.
+$
+$ nvidia-smi
+Mon Oct 28 11:36:32 2024       
++---------------------------------------------------------------------------------------+
+| NVIDIA-SMI 535.183.06             Driver Version: 535.183.06   CUDA Version: 12.2     |
+|-----------------------------------------+----------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id        Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |         Memory-Usage | GPU-Util  Compute M. |
+|                                         |                      |               MIG M. |
+|=========================================+======================+======================|
+|   0  NVIDIA GeForce GTX 1080        Off | 00000000:01:00.0 Off |                  N/A |
+| 24%   35C    P8               7W / 180W |      0MiB /  8192MiB |      0%      Default |
+|                                         |                      |                  N/A |
++-----------------------------------------+----------------------+----------------------+
+                                                                                         
++---------------------------------------------------------------------------------------+
+| Processes:                                                                            |
+|  GPU   GI   CI        PID   Type   Process name                            GPU Memory |
+|        ID   ID                                                             Usage      |
+|=======================================================================================|
+|  No running processes found                                                           |
++---------------------------------------------------------------------------------------+
 
-
+```
+Success! 405MiB of GPU RAM saved.
